@@ -1,0 +1,9 @@
+steps:
+  - script: |
+      echo $(name)
+      echo $(Build.Reason)
+      echo $(Build.SourceBranch)
+      echo $(Build.SourceBranchName)
+      echo $(Build.BuildNumber)
+      echo $(Build.SourceVersion)
+    displayName: 'Meta Info'

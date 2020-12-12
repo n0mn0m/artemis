@@ -1,0 +1,158 @@
+[env]
+RUST_BACKTRACE = 1
+
+[tasks.default]
+dependencies = [
+    "format",
+    "clippy",
+    "build",
+    "tests"
+]
+
+[tasks.build]
+command = "cargo"
+args = ["build"]
+dependencies = ["clean"]
+
+[tasks.clean]
+clear = true
+script = '''
+cargo clean
+rm -rf reports
+rm -rf coverage
+'''
+
+[tasks.clippy]
+command = "cargo"
+args = ["clippy", "--all-targets"]
+
+[tasks.compile-aarch64]
+command = "cross"
+args = ["build", "--target", "aarch64-unknown-linux-gnu", "--release", "--bin", "ams_notifications"]
+
+[tasks.compile-musl]
+command = "cross"
+args = ["build", "--target", "x86_64-unknown-linux-musl", "--release", "--bin", "ams_notifications"]
+
+[tasks.coverage-report]
+command = "reportgenerator"
+args = ["-reports:coverage/lcov.info", "-targetdir:coverage", "-reporttypes:Cobertura"]
+
+[tasks.docker]
+command = "docker-compose"
+args = ["up", "-d"]
+dependencies = ["docker-down"]
+
+# https://github.com/rust-embedded/cross#supported-targets
+[tasks.docker-build-aarch64]
+command = "docker"
+args = ["build", "-f", "./docker/aarch64.Dockerfile", "-t", "ams_notifications/aarch64", "."]
+dependencies = ["compile-aarch64"]
+
+[tasks.docker-build-debian]
+command = "docker"
+args = ["build", "-f", "./docker/deb.Dockerfile", "-t", "ams_notifications/debian", "."]
+dependencies = ["docker-down"]
+
+[tasks.docker-build-distroless]
+command = "docker"
+args = ["build", "-f", "./docker/distroless.Dockerfile", "-t", "ams_notifications/distroless", "."]
+dependencies = ["docker-down"]
+
+[tasks.docker-build-latest]
+command = "docker"
+args = ["build", "-f", "./docker/Dockerfile", "-t", "ams_notifications/latest", "."]
+dependencies = ["docker-down"]
+
+[tasks.docker-build-musl]
+command = "docker"
+args = ["build", "-f", "./docker/musl.Dockerfile", "-t", "ams_notifications/musl", "."]
+dependencies = ["compile-musl"]
+
+[tasks.docker-build-test]
+command = "docker"
+args = ["build", "-f", "./docker/test.Dockerfile", "-t", "ams_notifications/test", "."]
+
+[tasks.docker-clean]
+command = "docker"
+args = ["system", "prune", "-f"]
+
+[tasks.docker-clean-build]
+command = "docker-compose"
+args = ["up", "--no-cache", "--force-recreate", "-d"]
+dependencies = ["docker-down"]
+
+[tasks.docker-down]
+command = "docker-compose"
+args = ["down", "--remove-orphans"]
+
+[tasks.docker-test]
+command = "docker-compose"
+args = ["-f", "docker-compose.yml", "-f", "./docker/docker-compose.test.yml", "up", "--exit-code-from", "test"]
+dependencies = ["docker-down"]
+
+[tasks.format]
+install_crate = "rustfmt"
+command = "cargo"
+args = ["fmt", "--", "--emit=files"]
+
+[tasks.format-check]
+install_crate = "rustfmt"
+command = "cargo"
+args = ["fmt", "--", "--check"]
+
+[tasks.grcov]
+env = { "RUSTFLAGS" = "-Zinstrument-coverage", "LLVM_PROFILE_FILE" = "reports/llvm.profraw" }
+script = "grcov . --binary-path ./target/debug/ -s . -t lcov --branch --ignore-not-existing --ignore '/*' -o coverage/lcov.info"
+
+[tasks.junit]
+script = "cat reports/test_results.json | cargo2junit > reports/test_results.xml"
+
+[tasks.markdownlint]
+command = "pwsh"
+args = ["./tools/MarkdownLint.ps1"]
+
+[tasks.switch-to-nightly]
+command = "rustup"
+args = ["overide", "set", "nightly"]
+
+[tasks.switch-to-stable]
+command = "rustup"
+args = ["overide", "set", "stable"]
+
+[tasks.tests]
+env = { "RUSTFLAGS" = "-Zinstrument-coverage", "LLVM_PROFILE_FILE" = "reports/llvm.profraw" }
+script = "cargo test -- -Z unstable-options --format json | tee reports/test_results.json"
+
+[tasks.tool-cargo]
+command = "cargo"
+args = ["install", "cargo2junit", "cargo-audit", "cargo-bloat", "cargo-chef", "cargo-edit", "cargo-outdated", "cargo-update", "cross", "grcov"]
+
+# Seperate from cargo command as not all tools are integrated yet, and many are expensive for build times
+# which means we will need to cache, use a custom container or some other method of making these tools
+# available without requiring a fresh build everytime.
+[tasks.tool-ci]
+command = "cargo"
+args = ["install", "cargo2junit", "grcov"]
+dependencies = ["tool-dotnet"]
+
+[tasks.tool-deps]
+dependencies = ["tool-dotnet", "tool-cargo"]
+
+[tasks.tool-dotnet]
+command = "dotnet"
+args = ["tool", "install", "dotnet-reportgenerator-globaltool"]
+
+[tasks.update]
+script = "rustup update && cargo update"
+
+[tasks.verbose-build]
+command = "cargo"
+args = ["build", "--verbose", "--all-features"]
+
+[tasks.watch]
+# Uncomment to inspect Rocket code gen.
+# env = { "ROCKET_CODEGEN_DEBUG" = "1"}
+command = "cargo"
+args = ["watch", "-x", "check", "-x", "test", "-x", "run"]
+dependencies = ["docker", "format", "clippy"]

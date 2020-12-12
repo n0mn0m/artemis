@@ -1,0 +1,16 @@
+.dockerignore
+.gitignore
+.git
+target
+docs
+docker
+tools
+_cloudformation
+_repository
+_pipeline
+docker-compose.yml
+*.md
+
+# Cross Targets
+!target/x86_64-unknown-linux-musl/release/ams_notifications
+!target/aarch64-unknown-linux-gnu/release/ams_notifications

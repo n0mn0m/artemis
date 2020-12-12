@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+  memcached:
+    image: memcached:latest
+    restart: 'always'
+    ports:
+      - 11211:11211
+    networks:
+      credentials_network:
+        aliases:
+            - memcached
+        ipv4_address: "169.254.170.7"

@@ -1,0 +1,22 @@
+version: '2'
+
+services:
+  test:
+    depends_on:
+      - ecs-local-endpoints
+    build:
+      context: '.'
+      dockerfile: './docker/test.Dockerfile'
+    environment:
+      AWS_DEFAULT_REGION: "us-east-1"
+      AWS_CONTAINER_CREDENTIALS_RELATIVE_URI: "/creds"
+      AwsEnvironment: "local"
+      AwsSecretRegion: "us-east-1"
+    volumes:
+      - ./reports:/app/reports
+      - ./coverage:/app/coverage
+    networks:
+      credentials_network:
+        aliases:
+          - test
+        ipv4_address: "169.254.170.8"

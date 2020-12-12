@@ -1,0 +1,36 @@
+# Trigger on an inbound event to main
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-18.04'
+
+# This formats the Build.BuildNumber
+name: $(Year:yyyy).$(Month).$(DayOfMonth).$(Rev:r)
+
+variables:
+  - template: ./vars.yml
+
+stages:
+  - stage:
+    displayName: 'Tracking'
+    jobs:
+      - job: Metadata
+        displayName: 'Capture pipeline and build metadata'
+        timeoutInMinutes: 1
+        steps:
+          - template: templates/meta.yml
+
+  - stage: Build
+    displayName: 'Lint, Test, Build & Publish'
+    jobs:
+      - job: LintBuildTest
+        displayName: 'Lint Build Test'
+        timeoutInMinutes: 30
+        workspace:
+          clean: all
+        steps:
+          - template: templates/ci-tools.yml
+
+          - template: templates/lint.yml
+
+          - template: templates/cross-build.yml

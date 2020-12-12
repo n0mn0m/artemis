@@ -1,0 +1,25 @@
+parameters:
+  AwsRegions: []
+
+steps:
+  - task: Docker@2
+    inputs:
+      command: build
+      Dockerfile: 'docker/distroless.Dockerfile'
+      buildContext: '$(System.DefaultWorkingDirectory)'
+      repository: $(AppName)
+      tags: $(Build.BuildNumber)
+    displayName: 'Docker Build'
+
+  - ${{ each Region in parameters.AwsRegions }}:
+    - task: AmazonWebServices.aws-vsts-tools.ECRPushImage.ECRPushImage@1
+      condition: or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+      inputs:
+        awsCredentials: alm
+        regionName: ${{ Region }}
+        sourceImageName: '$(AppName)'
+        sourceImageTag: '$(Build.BuildNumber)'
+        repositoryName: '$(AppName)'
+        pushTag: '$(Build.BuildNumber)'
+        autoCreateRepository: true
+      displayName: 'Push Image: $(Build.SourceVersion) for $(Build.BuildNumber) in ${{ Region }}'
