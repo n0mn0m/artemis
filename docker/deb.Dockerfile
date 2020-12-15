@@ -16,9 +16,9 @@ WORKDIR app
 COPY . .
 COPY --from=cacher /app/target target
 COPY --from=cacher /usr/local/cargo /usr/local/cargo
-RUN cargo build --release --bin ams_notifications
+RUN cargo build --release --bin artemis
 
 FROM rust:1.48-slim-buster as runtime
 WORKDIR app
-COPY --from=builder /app/target/release/ams_notifications /usr/local/bin
-ENTRYPOINT ["/usr/local/bin/ams_notifications"]
+COPY --from=builder /app/target/release/artemis /usr/local/bin
+ENTRYPOINT ["/usr/local/bin/artemis"]

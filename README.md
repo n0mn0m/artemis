@@ -7,7 +7,7 @@ secrets, etc) managed and injected via dependency injection.
 
 This project uses [Rust](https://www.rust-lang.org/tools/install).
 
-This project makes use of [`cargo make`](https://github.com/sagiegurari/cargo-make)  
+This project makes use of [`cargo make`](https://github.com/sagiegurari/cargo-make)
 to provide cross platform dev and ci commands. To get started run
 `cargo make` and the default command will get you going.
 

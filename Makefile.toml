@@ -1,12 +1,19 @@
 [env]
 RUST_BACKTRACE = 1
 
+[config]
+skip_core_tasks = true
+
 [tasks.default]
 dependencies = [
-    "format",
+    "markdownlint",
     "clippy",
+    "format",
     "build",
-    "tests"
+    "tests",
+    "junit",
+    "grcov",
+    "coverage-report"
 ]
 
 [tasks.build]
@@ -18,8 +25,6 @@ dependencies = ["clean"]
 clear = true
 script = '''
 cargo clean
-rm -rf reports
-rm -rf coverage
 '''
 
 [tasks.clippy]
@@ -28,11 +33,11 @@ args = ["clippy", "--all-targets"]
 
 [tasks.compile-aarch64]
 command = "cross"
-args = ["build", "--target", "aarch64-unknown-linux-gnu", "--release", "--bin", "ams_notifications"]
+args = ["build", "--target", "aarch64-unknown-linux-gnu", "--release", "--bin", "artemis"]
 
 [tasks.compile-musl]
 command = "cross"
-args = ["build", "--target", "x86_64-unknown-linux-musl", "--release", "--bin", "ams_notifications"]
+args = ["build", "--target", "x86_64-unknown-linux-musl", "--release", "--bin", "artemis"]
 
 [tasks.coverage-report]
 command = "reportgenerator"
@@ -46,32 +51,32 @@ dependencies = ["docker-down"]
 # https://github.com/rust-embedded/cross#supported-targets
 [tasks.docker-build-aarch64]
 command = "docker"
-args = ["build", "-f", "./docker/aarch64.Dockerfile", "-t", "ams_notifications/aarch64", "."]
+args = ["build", "-f", "./docker/aarch64.Dockerfile", "-t", "artemis/aarch64", "."]
 dependencies = ["compile-aarch64"]
 
 [tasks.docker-build-debian]
 command = "docker"
-args = ["build", "-f", "./docker/deb.Dockerfile", "-t", "ams_notifications/debian", "."]
+args = ["build", "-f", "./docker/deb.Dockerfile", "-t", "artemis/debian", "."]
 dependencies = ["docker-down"]
 
 [tasks.docker-build-distroless]
 command = "docker"
-args = ["build", "-f", "./docker/distroless.Dockerfile", "-t", "ams_notifications/distroless", "."]
+args = ["build", "-f", "./docker/distroless.Dockerfile", "-t", "artemis/distroless", "."]
 dependencies = ["docker-down"]
 
 [tasks.docker-build-latest]
 command = "docker"
-args = ["build", "-f", "./docker/Dockerfile", "-t", "ams_notifications/latest", "."]
+args = ["build", "-f", "./docker/Dockerfile", "-t", "artemis/latest", "."]
 dependencies = ["docker-down"]
 
 [tasks.docker-build-musl]
 command = "docker"
-args = ["build", "-f", "./docker/musl.Dockerfile", "-t", "ams_notifications/musl", "."]
+args = ["build", "-f", "./docker/musl.Dockerfile", "-t", "artemis/musl", "."]
 dependencies = ["compile-musl"]
 
 [tasks.docker-build-test]
 command = "docker"
-args = ["build", "-f", "./docker/test.Dockerfile", "-t", "ams_notifications/test", "."]
+args = ["build", "-f", "./docker/test.Dockerfile", "-t", "artemis/test", "."]
 
 [tasks.docker-clean]
 command = "docker"

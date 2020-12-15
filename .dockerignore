@@ -12,5 +12,5 @@ docker-compose.yml
 *.md
 
 # Cross Targets
-!target/x86_64-unknown-linux-musl/release/ams_notifications
-!target/aarch64-unknown-linux-gnu/release/ams_notifications
+!target/x86_64-unknown-linux-musl/release/artemis
+!target/aarch64-unknown-linux-gnu/release/artemis

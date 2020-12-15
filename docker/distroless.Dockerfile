@@ -20,9 +20,9 @@ WORKDIR app
 COPY . .
 COPY --from=cacher /app/target target
 COPY --from=cacher /usr/local/cargo /usr/local/cargo
-RUN cargo build --release --bin ams_notifications
+RUN cargo build --release --bin artemis
 
 FROM gcr.io/distroless/cc
 WORKDIR app
-COPY --from=builder /app/target/release/ams_notifications /
-ENTRYPOINT ["/ams_notifications"]
+COPY --from=builder /app/target/release/artemis /
+ENTRYPOINT ["/artemis"]

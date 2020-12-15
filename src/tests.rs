@@ -1,5 +1,8 @@
+#[cfg(test)]
 use crate::{configure_services, rocket};
+#[cfg(test)]
 use rocket::http::Status;
+#[cfg(test)]
 use rocket::local::Client;
 
 #[test]

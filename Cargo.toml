@@ -1,7 +1,7 @@
 [package]
-name = "ams_notifications"
+name = "artemis"
 version = "0.1.0"
-authors = ["Alexander Hagerman <alexander.hagerman@samtec.com>"]
+authors = ["Alexander Hagerman <n0mn0m@burningdaylight.io>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -9,6 +9,10 @@ edition = "2018"
 [dependencies]
 rocket = "0.4.6"
 shaku_rocket = "0.5.0"
+rusoto_core = "0.45.0"
+rusoto_secretsmanager = "0.45.0"
+futures = "0.3.8"
+tokio = "0.2"
 
 [dependencies.shaku]
 version = "0.5.0"

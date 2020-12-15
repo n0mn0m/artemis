@@ -2,12 +2,15 @@
 
 #[macro_use]
 extern crate rocket;
-
-mod autofac;
-use crate::autofac::{AutoFacModule, IDateWriter, TodayWriter, TodayWriterParameters};
 use shaku_rocket::Inject;
 
+use rusoto_core::Region;
+use tokio::task;
+
+mod autofac;
+mod services;
 mod tests;
+use crate::autofac::{AutoFacModule, IDateWriter, TodayWriter, TodayWriterParameters};
 
 #[get("/")]
 fn index(writer: Inject<AutoFacModule, dyn IDateWriter>) -> String {
@@ -28,6 +31,13 @@ fn rocket(services: autofac::AutoFacModule) -> rocket::Rocket {
     rocket::ignite().manage(services).mount("/", routes![index])
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
+    let threadpool_future =
+        task::spawn_blocking(|| services::secret_manager::SecretStore::new(Region::UsEast1));
+    let _secrets = threadpool_future.await.unwrap();
+    // dbg!("{}", _secrets.secrets);
+    // dbg!("{}", _secrets.shelf);
+
     rocket(configure_services()).launch();
 }
