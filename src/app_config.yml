@@ -1,0 +1,37 @@
+application_name: notifications
+application_id: notifications
+
+urls: http://*:6565
+
+cors_allowed_domain: "*"
+allow_return_of_exception_details: true
+require_client_name_header_value: true
+use_cloud_watch_metrics: false
+
+logging:
+  log_level:
+    default: Information
+
+jwt_token:
+  audience: foo.configuration
+  issuer: bar.com
+
+ip_rate_limiting:
+  use_distributed_caching: false
+  enable_endpoint_rate_limiting: true
+  stack_blocked_requests: false
+  real_ip_header: "X-Forwarded-For"
+  http_status_code: 429
+  ip_white_list: []
+  endpoint_white_list: []
+  general_rules:
+    -  endpoint: "*"
+       period: "1s"
+       limit: 10
+
+ip_rate_limit_policies:
+  ip_rules: []
+
+aws:
+  region: us-east-1
+  secret_name: notifications
