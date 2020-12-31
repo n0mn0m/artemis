@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
-
-use serde_yaml;
+use std::io;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct IpRateLimiting {
@@ -28,12 +27,12 @@ pub struct IpRateLimitPolicies {
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct Logging {
-    log_level: LogLevel,
+    pub log_level: LogLevel,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LogLevel {
-    default: String,
+    pub default: String,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
@@ -58,9 +57,14 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn new(path: String) -> Config {
-        let f = std::fs::File::open(path).unwrap();
-        let parsed: Config = serde_yaml::from_reader(f).unwrap();
-        parsed
+    pub async fn new(path: String) -> Result<Config, io::Error> {
+        let file = std::fs::File::open(path);
+        match file {
+            Err(e) => Err(e),
+            Ok(f) => {
+                let parsed: Config = serde_yaml::from_reader(f).unwrap();
+                Ok(parsed)
+            }
+        }
     }
 }

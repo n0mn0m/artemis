@@ -1,14 +1,13 @@
-use crate::configuration::config::Config;
+use rustc_version_runtime::version;
+use serde::Serialize;
 use std::env;
 
-use serde::Serialize;
+use crate::configuration::config::Config;
 
-use rustc_version_runtime::version;
-
-const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[derive(Serialize, Debug)]
-pub struct ApplicationInformation {
+pub struct ServiceInformation {
     pub name: String,
     pub version: String,
     pub environment: String,
@@ -17,10 +16,10 @@ pub struct ApplicationInformation {
     pub rustc_version: String,
 }
 
-impl ApplicationInformation {
-    pub fn new(config: &Config) -> ApplicationInformation {
-        ApplicationInformation {
-            name: config.application_name.clone().to_string(),
+impl ServiceInformation {
+    pub fn new(config: &Config) -> ServiceInformation {
+        ServiceInformation {
+            name: config.application_name.to_string(),
             version: VERSION.to_string(),
             environment: match env::var_os("AwsEnvironment") {
                 Some(val) => val.into_string().unwrap(),
@@ -28,11 +27,11 @@ impl ApplicationInformation {
             },
             rustc_version: version().to_string(),
             launch_time: chrono::offset::Utc::today().to_string(),
-            region: config.aws.region.clone().to_string(),
+            region: config.aws.region.to_string(),
         }
     }
 
-    pub fn banner_message(&self) -> String {
+    pub fn info(&self) -> String {
         format!(
             "
 ##########################################################################
