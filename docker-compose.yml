@@ -11,6 +11,10 @@ networks:
         - subnet: "169.254.170.0/24"
           gateway: 169.254.170.1
 
+volumes:
+  notification_master_data:
+    driver: local
+
 services:
   # This container vends aws credentials to your containers
   ecs-local-endpoints:
@@ -31,6 +35,84 @@ services:
       credentials_network:
         # define an alias for service discovery
         ipv4_address: "169.254.170.2"
+
+  mongo:
+    image: 'bitnami/mongodb:4.2'
+    depends_on:
+      - ecs-local-endpoints
+    restart: 'always'
+    environment:
+      - MONGODB_ROOT_PASSWORD=iamroot
+      - MONGODB_USERNAME=api
+      - MONGODB_PASSWORD=password123
+      - MONGODB_DATABASE=assetmaintenance
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_REPLICA_SET_NAME=rs0
+      - MONGODB_REPLICA_SET_KEY=1234567890
+      - MONGODB_ADVERTISED_HOSTNAME=mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - 'notification_master_data:/bitnami'
+      - './_repository/:/docker-entrypoint-initdb.d/'
+    networks:
+      credentials_network:
+        # define an alias for service discovery
+        aliases:
+          - mongo
+        ipv4_address: "169.254.170.4"
+
+  mongo-secondary-one:
+    image: 'bitnami/mongodb:4.2'
+    depends_on:
+      - mongo
+      - ecs-local-endpoints
+    restart: 'always'
+    environment:
+      - MONGODB_REPLICA_SET_NAME=rs0
+      - MONGODB_ADVERTISED_HOSTNAME=mongo-secondary-one
+      - MONGODB_REPLICA_SET_MODE=secondary
+      - MONGODB_INITIAL_PRIMARY_HOST=mongo
+      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=iamroot
+      - MONGODB_REPLICA_SET_KEY=1234567890
+    networks:
+      credentials_network:
+        # define an alias for service discovery
+        ipv4_address: "169.254.170.14"
+
+  mongo-secondary-two:
+    image: 'bitnami/mongodb:4.2'
+    depends_on:
+      - mongo
+      - ecs-local-endpoints
+    restart: 'always'
+    environment:
+      - MONGODB_REPLICA_SET_NAME=rs0
+      - MONGODB_ADVERTISED_HOSTNAME=mongo-secondary-two
+      - MONGODB_REPLICA_SET_MODE=secondary
+      - MONGODB_INITIAL_PRIMARY_HOST=mongo
+      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=iamroot
+      - MONGODB_REPLICA_SET_KEY=1234567890
+    networks:
+      credentials_network:
+        # define an alias for service discovery
+        ipv4_address: "169.254.170.15"
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=iamroot
+    depends_on:
+      - mongo
+    networks:
+      credentials_network:
+        aliases:
+          - mongo-express
+        ipv4_address: "169.254.170.6"
 
   memcached:
     image: memcached:latest
