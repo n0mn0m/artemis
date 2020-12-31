@@ -1,7 +1,7 @@
 use rusoto_core::Region;
 use rusoto_secretsmanager::{GetSecretValueRequest, SecretsManager, SecretsManagerClient};
 
-use serde::{Deserialize};
+use serde::Deserialize;
 
 // TODO Change this to a nested yaml like setup to
 // destructure and pass pieces around i.e. mongo, elastic, aws
