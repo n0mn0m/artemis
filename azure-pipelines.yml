@@ -30,7 +30,6 @@ stages:
           DeploymentEnvironment: 'dev'
           AwsRegion: us-east-1
           DesiredInstanceCount: 1
-          NotificationTopicName: arn:aws:sns:us-east-1:208792733595:$(AwsServiceAlarmTopicName)-dev
         workspace:
           clean: all
         steps:
