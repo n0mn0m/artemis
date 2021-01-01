@@ -16,8 +16,8 @@ pub struct IpRateLimiting {
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct JwtToken {
-    audience: String,
-    issuer: String,
+    pub audience: String,
+    pub issuer: String,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]

@@ -1,8 +1,10 @@
 use rocket::http::Status;
 use rocket::State;
+use shaku_rocket::Inject;
 
 use crate::configuration::config::Config;
 use crate::utils::service_information::ServiceInformation;
+use crate::utils::autofac::{AutoFacModule, IDateWriter};
 
 #[get("/healthcheck")]
 pub fn healthcheck() -> Status {
@@ -12,6 +14,12 @@ pub fn healthcheck() -> Status {
 #[get("/about")]
 pub fn about(s: State<ServiceInformation>) -> String {
     s.info()
+}
+
+#[get("/systemtime")]
+pub fn system_time(writer: Inject<AutoFacModule, dyn IDateWriter>) -> String {
+    writer.write_date();
+    writer.get_date()
 }
 
 // TODO: Get log level from active log object as it may mutate

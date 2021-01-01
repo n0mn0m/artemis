@@ -36,7 +36,7 @@ pub struct TodayWriter {
     #[shaku(inject)]
     output: Arc<dyn IOutput>,
     today: String,
-    year: usize,
+    year: i32,
 }
 
 impl IDateWriter for TodayWriter {

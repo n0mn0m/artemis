@@ -1,34 +1,29 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 #[macro_use]
 extern crate rocket;
-use shaku_rocket::Inject;
+use chrono::{Datelike};
 use std::io;
 use tracing::info;
 
-mod autofac;
 mod configuration;
 mod repositories;
 mod routes;
 mod telemetry;
-mod tests;
 mod utils;
 
-use autofac::{AutoFacModule, IDateWriter, TodayWriter, TodayWriterParameters};
 use configuration::{config::Config, secrets::Secrets};
 use routes::diagnostic;
+use utils::autofac::{AutoFacModule, TodayWriter, TodayWriterParameters};
 use utils::service_information::ServiceInformation;
 
-#[get("/")]
-fn index(writer: Inject<AutoFacModule, dyn IDateWriter>) -> String {
-    writer.write_date();
-    writer.get_date()
-}
+#[cfg(test)]
+mod tests;
 
-async fn configure_services() -> autofac::AutoFacModule {
+async fn configure_services() -> AutoFacModule {
     AutoFacModule::builder()
         .with_component_parameters::<TodayWriter>(TodayWriterParameters {
             today: chrono::offset::Utc::today().to_string(),
-            year: 2020,
+            year: chrono::offset::Utc::today().year(),
         })
         .build()
 }
@@ -47,7 +42,7 @@ async fn crawler() -> Result<Settings, io::Error> {
     }
 }
 
-fn launchpad(services: autofac::AutoFacModule, settings: Settings) -> rocket::Rocket {
+fn launchpad(services: AutoFacModule, settings: Settings) -> rocket::Rocket {
     rocket::ignite()
         .manage(services)
         .manage(settings.0)
@@ -59,10 +54,10 @@ fn launchpad(services: autofac::AutoFacModule, settings: Settings) -> rocket::Ro
                 diagnostic::healthcheck,
                 diagnostic::about,
                 diagnostic::current_loglevel,
-                diagnostic::set_loglevel
+                diagnostic::set_loglevel,
+                diagnostic::system_time
             ],
         )
-        .mount("/", routes![index])
 }
 
 #[tokio::main]
