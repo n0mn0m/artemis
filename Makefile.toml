@@ -20,6 +20,7 @@ dependencies = [
 install_crate = "cross"
 command = "cross"
 args = ["build", "--target", "aarch64-unknown-linux-gnu", "--release", "--bin", "artemis"]
+dependencies = ["install-rustup-aarch64-linux"]
 
 [tasks.build]
 command = "cargo"
@@ -115,6 +116,12 @@ script = "dotnet tool install --tool-path /usr/local/bin dotnet-reportgenerator-
 [tasks.install-rustup-components]
 script = "rustup component add llvm-tools-preview"
 
+[tasks.install-rustup-aarch64-linux]
+script = "rustup target add aarch64-unknown-linux-gnu --toolchain nightly"
+
+[tasks.install-rustup-musl-linux]
+script = "rustup target add x86_64-unknown-linux-musl --toolchain nightly"
+
 [tasks.install-node-tools]
 script = "npm install -g markdownlint-cli"
 
@@ -132,6 +139,7 @@ script = "mkdir -p reports"
 install_crate = "cross"
 command = "cross"
 args = ["build", "--target", "x86_64-unknown-linux-musl", "--release", "--bin", "artemis"]
+dependencies = ["install-rustup-musl-linux"]
 
 [tasks.nightly]
 command = "rustup"
