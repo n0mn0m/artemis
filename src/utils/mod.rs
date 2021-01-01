@@ -1,2 +1,2 @@
-pub mod service_information;
 pub mod autofac;
+pub mod service_information;

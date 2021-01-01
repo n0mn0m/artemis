@@ -3,8 +3,8 @@ use rocket::State;
 use shaku_rocket::Inject;
 
 use crate::configuration::config::Config;
-use crate::utils::service_information::ServiceInformation;
 use crate::utils::autofac::{AutoFacModule, IDateWriter};
+use crate::utils::service_information::ServiceInformation;
 
 #[get("/healthcheck")]
 pub fn healthcheck() -> Status {
