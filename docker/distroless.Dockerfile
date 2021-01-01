@@ -1,19 +1,19 @@
 # Set rust version for compilation running in a distroless container.
 # https://github.com/GoogleContainerTools/distroless
 # If you need a debug shell https://github.com/GoogleContainerTools/distroless#debug-images
-FROM rust:nightly as planner
+FROM rustlang/rust:nightly as planner
 WORKDIR app
 RUN cargo install cargo-chef
 COPY . .
 RUN cargo chef prepare  --recipe-path recipe.json
 
-FROM rust:nightly as cacher
+FROM rustlang/rust:nightly as cacher
 WORKDIR app
 RUN cargo install cargo-chef
 COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 
-FROM rust:nightly as builder
+FROM rustlang/rust:nightly as builder
 WORKDIR app
 COPY . .
 COPY --from=cacher /app/target target
