@@ -99,7 +99,7 @@ fn healthcheck() {
     let st = Settings(c, sc, si);
 
     let client = Client::new(launchpad(sv, st)).expect("valid rocket instance");
-    let mut response = client.get("/diagnostic/healthcheck").dispatch();
+    let response = client.get("/diagnostic/healthcheck").dispatch();
 
     assert_eq!(response.status(), Status::NoContent);
 }
