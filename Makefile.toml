@@ -36,7 +36,6 @@ args = ["clippy", "--all-targets"]
 [tasks.coverage]
 command = "reportgenerator"
 args = ["-reports:coverage/lcov.info", "-targetdir:coverage", "-reporttypes:Cobertura"]
-dependencies = ["install-reportgenerator"]
 
 # https://github.com/rust-embedded/cross#supported-targets
 [tasks.docker-aarch64]
@@ -111,7 +110,7 @@ script = "cargo install cargo2junit"
 
 [tasks.install-reportgenerator]
 ignore_errors = true
-script = "dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.8.4"
+script = "dotnet tool install --tool-path /usr/local/bin dotnet-reportgenerator-globaltool --version 4.8.4"
 
 [tasks.install-rustup-components]
 script = "rustup component add llvm-tools-preview"
