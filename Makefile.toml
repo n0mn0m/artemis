@@ -6,86 +6,67 @@ skip_core_tasks = true
 
 [tasks.default]
 dependencies = [
+    "nightly",
     "markdownlint",
     "clippy",
     "format",
-    "build",
-    "tests",
+    "test",
     "junit",
     "grcov",
-    "coverage-report"
+    "coverage"
 ]
+
+[tasks.aarch64]
+install_crate = "cross"
+command = "cross"
+args = ["build", "--target", "aarch64-unknown-linux-gnu", "--release", "--bin", "artemis"]
 
 [tasks.build]
 command = "cargo"
-args = ["build"]
-dependencies = ["clean"]
+args = ["build", "--verbose"]
 
 [tasks.clean]
-clear = true
-script = '''
-cargo clean
-'''
+command = "cargo"
+args = ["clean"]
 
 [tasks.clippy]
 command = "cargo"
 args = ["clippy", "--all-targets"]
 
-[tasks.compile-aarch64]
-command = "cross"
-args = ["build", "--target", "aarch64-unknown-linux-gnu", "--release", "--bin", "artemis"]
-
-[tasks.compile-musl]
-command = "cross"
-args = ["build", "--target", "x86_64-unknown-linux-musl", "--release", "--bin", "artemis"]
-
-[tasks.coverage-report]
+[tasks.coverage]
 command = "reportgenerator"
 args = ["-reports:coverage/lcov.info", "-targetdir:coverage", "-reporttypes:Cobertura"]
+dependencies = ["install-reportgenerator"]
 
-[tasks.docker]
+# https://github.com/rust-embedded/cross#supported-targets
+[tasks.docker-aarch64]
+command = "docker"
+args = ["build", "-f", "./docker/aarch64.Dockerfile", "-t", "artemis/aarch64", "."]
+dependencies = ["aarch64"]
+
+[tasks.docker-compose]
 command = "docker-compose"
 args = ["up", "-d"]
 dependencies = ["docker-down"]
 
-# https://github.com/rust-embedded/cross#supported-targets
-[tasks.docker-build-aarch64]
-command = "docker"
-args = ["build", "-f", "./docker/aarch64.Dockerfile", "-t", "artemis/aarch64", "."]
-dependencies = ["compile-aarch64"]
-
-[tasks.docker-build-debian]
+[tasks.docker-debian]
 command = "docker"
 args = ["build", "-f", "./docker/deb.Dockerfile", "-t", "artemis/debian", "."]
 dependencies = ["docker-down"]
 
-[tasks.docker-build-distroless]
+[tasks.docker-distroless]
 command = "docker"
 args = ["build", "-f", "./docker/distroless.Dockerfile", "-t", "artemis/distroless", "."]
 dependencies = ["docker-down"]
 
-[tasks.docker-build-latest]
-command = "docker"
-args = ["build", "-f", "./docker/Dockerfile", "-t", "artemis/latest", "."]
-dependencies = ["docker-down"]
-
-[tasks.docker-build-musl]
+[tasks.docker-musl]
 command = "docker"
 args = ["build", "-f", "./docker/musl.Dockerfile", "-t", "artemis/musl", "."]
-dependencies = ["compile-musl"]
-
-[tasks.docker-build-test]
-command = "docker"
-args = ["build", "-f", "./docker/test.Dockerfile", "-t", "artemis/test", "."]
+dependencies = ["musl"]
 
 [tasks.docker-clean]
 command = "docker"
 args = ["system", "prune", "-f"]
-
-[tasks.docker-clean-build]
-command = "docker-compose"
-args = ["up", "--no-cache", "--force-recreate", "-d"]
-dependencies = ["docker-down"]
 
 [tasks.docker-down]
 command = "docker-compose"
@@ -93,7 +74,7 @@ args = ["down", "--remove-orphans"]
 
 [tasks.docker-test]
 command = "docker-compose"
-args = ["-f", "docker-compose.yml", "-f", "./docker/docker-compose.test.yml", "up", "--exit-code-from", "test"]
+args = ["-f", "docker-compose.yml", "-f", "docker/docker-compose.test.yml", "up", "--exit-code-from", "test"]
 dependencies = ["docker-down"]
 
 [tasks.format]
@@ -107,57 +88,75 @@ command = "cargo"
 args = ["fmt", "--", "--check"]
 
 [tasks.grcov]
-env = { "RUSTFLAGS" = "-Zinstrument-coverage", "LLVM_PROFILE_FILE" = "reports/llvm.profraw" }
+env = { "RUSTFLAGS" = "-Zinstrument-coverage", "LLVM_PROFILE_FILE" = "reports/llvm.profraw", "RUSTC_BOOTSTRAP" = "1" }
 script = "grcov . --binary-path ./target/debug/ -s . -t lcov --branch --ignore-not-existing --ignore '/*' -o coverage/lcov.info"
+dependencies = ["install-grcov"]
 
 [tasks.junit]
 script = "cat reports/test_results.json | cargo2junit > reports/test_results.xml"
+dependencies = ["install-cargo2junit"]
+
+[tasks.install-cargo-tools]
+command = "cargo"
+args = ["install", "cargo-audit", "cargo-bloat", "cargo-edit", "cargo-outdated", "cargo-update"]
+
+[tasks.install-dotnet-tools]
+script = "dotnet tool restore"
+
+[tasks.install-grcov]
+script = "cargo install grcov"
+
+[tasks.install-cargo2junit]
+script = "cargo install cargo2junit"
+
+[tasks.install-reportgenerator]
+ignore_errors = true
+script = "dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.8.4"
+
+[tasks.install-rustup-components]
+script = "rustup component add llvm-tools-preview"
+
+[tasks.install-node-tools]
+script = "npm install -g markdownlint-cli"
 
 [tasks.markdownlint]
-command = "pwsh"
-args = ["./tools/MarkdownLint.ps1"]
+script = "pwsh ./tools/MarkdownLint.ps1"
+dependencies = ["install-node-tools"]
 
-[tasks.switch-to-nightly]
+[tasks.mkdir-coverage]
+script = "mkdir -p coverage"
+
+[tasks.mkdir-reports]
+script = "mkdir -p reports"
+
+[tasks.musl]
+install_crate = "cross"
+command = "cross"
+args = ["build", "--target", "x86_64-unknown-linux-musl", "--release", "--bin", "artemis"]
+
+[tasks.nightly]
 command = "rustup"
-args = ["overide", "set", "nightly"]
+args = ["override", "set", "nightly"]
 
-[tasks.switch-to-stable]
+[tasks.release]
+command = "cargo"
+args = ["build", "--release", "--verbose"]
+
+[tasks.stable]
 command = "rustup"
-args = ["overide", "set", "stable"]
+args = ["override", "set", "stable"]
 
-[tasks.tests]
-env = { "RUSTFLAGS" = "-Zinstrument-coverage", "LLVM_PROFILE_FILE" = "reports/llvm.profraw" }
+[tasks.test]
+env = { "RUSTFLAGS" = "-Zinstrument-coverage", "LLVM_PROFILE_FILE" = "reports/llvm.profraw", "RUSTC_BOOTSTRAP" = "1" }
 script = "cargo test -- -Z unstable-options --format json | tee reports/test_results.json"
-
-[tasks.tool-cargo]
-command = "cargo"
-args = ["install", "cargo2junit", "cargo-audit", "cargo-bloat", "cargo-chef", "cargo-edit", "cargo-outdated", "cargo-update", "cross", "grcov"]
-
-# Seperate from cargo command as not all tools are integrated yet, and many are expensive for build times
-# which means we will need to cache, use a custom container or some other method of making these tools
-# available without requiring a fresh build everytime.
-[tasks.tool-ci]
-command = "cargo"
-args = ["install", "cargo2junit", "grcov"]
-dependencies = ["tool-dotnet"]
-
-[tasks.tool-deps]
-dependencies = ["tool-dotnet", "tool-cargo"]
-
-[tasks.tool-dotnet]
-command = "dotnet"
-args = ["tool", "install", "dotnet-reportgenerator-globaltool"]
+dependencies = ["mkdir-coverage", "mkdir-reports", "install-rustup-components"]
 
 [tasks.update]
 script = "rustup update && cargo update"
-
-[tasks.verbose-build]
-command = "cargo"
-args = ["build", "--verbose", "--all-features"]
 
 [tasks.watch]
 # Uncomment to inspect Rocket code gen.
 # env = { "ROCKET_CODEGEN_DEBUG" = "1"}
 command = "cargo"
 args = ["watch", "-x", "check", "-x", "test", "-x", "run"]
-dependencies = ["docker", "format", "clippy"]
+dependencies = ["docker-compose", "format", "clippy"]
