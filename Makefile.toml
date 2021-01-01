@@ -35,7 +35,7 @@ args = ["clippy", "--all-targets"]
 
 [tasks.coverage]
 command = "reportgenerator"
-args = ["-reports:coverage/lcov.info", "-targetdir:coverage", "-reporttypes:Cobertura"]
+args = ["-reports:coverage/lcov.info", "-targetdir:coverage", "-reporttypes:Html;Cobertura"]
 
 # https://github.com/rust-embedded/cross#supported-targets
 [tasks.docker-aarch64]
