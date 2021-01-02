@@ -41,6 +41,7 @@ object musl : BuildType({
     name = "musl"
     description = "Build project for use with musl"
 
+    allowExternalStatus = true
     artifactRules = """
         reports => reports.zip
         coverage => coverage.zip
