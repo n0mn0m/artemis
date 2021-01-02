@@ -141,7 +141,7 @@ script = "mkdir -p reports"
 [tasks.musl]
 install_crate = "cross"
 command = "cross"
-args = ["build", "--target", "x86_64-unknown-linux-musl", "--release", "--bin", "artemis"]
+args = ["build", "--target", "x86_64-unknown-linux-musl", "--features", "vendored-openssl", "--release", "--bin", "artemis"]
 dependencies = ["install-rustup-musl-linux"]
 
 [tasks.nightly]
