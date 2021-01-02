@@ -116,6 +116,9 @@ script = "dotnet tool install --tool-path /usr/local/bin dotnet-reportgenerator-
 [tasks.install-rustup-components]
 script = "rustup component add llvm-tools-preview"
 
+[tasks.install-rustup-linux-gnu]
+script = "rustup target add x86_64-unknown-linux-gnu --toolchain nightly"
+
 [tasks.install-rustup-aarch64-linux]
 script = "rustup target add aarch64-unknown-linux-gnu --toolchain nightly"
 
@@ -146,7 +149,10 @@ command = "rustup"
 args = ["override", "set", "nightly"]
 
 [tasks.nightly-aarch64-linux]
-script = "rustup default nightly-aarch64-unknown-linux-gnu "
+script = "rustup default nightly-aarch64-unknown-linux-gnu"
+
+[tasks.nightly-linux-gnu]
+script = "rustup default nightly-x86_64-unknown-linux-gnu"
 
 [tasks.nightly-musl]
 script = "rustup default nightly-x86_64-unknown-linux-musl"
