@@ -41,6 +41,7 @@ object musl : BuildType({
     name = "musl"
     description = "Build project for use with musl"
 
+    allowExternalStatus = true
     artifactRules = """
         reports => reports.zip
         coverage => coverage.zip
@@ -160,6 +161,7 @@ object primary : BuildType({
     name = "primary"
     description = "Build project for use in distroless container"
 
+    allowExternalStatus = true
     artifactRules = """
         reports => reports.zip
         coverage => coverage.zip
