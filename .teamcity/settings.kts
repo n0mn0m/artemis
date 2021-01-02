@@ -97,6 +97,12 @@ object musl : BuildType({
             param("script.content", "cargo make junit")
         }
         exec {
+            name = "Convert junit to html"
+            path = "/home/buildagent/.cargo/bin/cargo"
+            arguments = "make junit2html"
+            param("script.content", "cargo make junit2html")
+        }
+        exec {
             name = "Grcov"
             path = "/home/buildagent/.cargo/bin/cargo"
             arguments = "make grcov"
@@ -207,6 +213,12 @@ object primary : BuildType({
             path = "/home/buildagent/.cargo/bin/cargo"
             arguments = "make junit"
             param("script.content", "cargo make junit")
+        }
+        exec {
+            name = "Convert junit to html"
+            path = "/home/buildagent/.cargo/bin/cargo"
+            arguments = "make junit2html"
+            param("script.content", "cargo make junit2html")
         }
         exec {
             name = "Grcov"

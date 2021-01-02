@@ -1,4 +1,0 @@
-variables:
-  disable.coverage.autogenerate: 'true'
-  buildConfiguration: 'release'
-  RUSTUP_TOOLCHAIN: nightly-x86_64-unknown-linux-gnu

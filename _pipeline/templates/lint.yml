@@ -1,8 +1,0 @@
-steps:
-  - script: |
-      cargo make format-check
-    displayName: 'Format check.'
-
-  - script: |
-      cargo make clippy
-    displayName: 'Clippy!'
