@@ -58,66 +58,66 @@ object musl : BuildType({
     steps {
         exec {
             name = "Install musl toolchain"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make install-rustup-musl-linux"
         }
         exec {
             name = "Set toolchain"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make nightly-musl"
             param("script.content", "cargo make format-check")
         }
         exec {
             name = "Update toolchain"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make update"
         }
         exec {
             name = "Check formatting"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make format-check"
             param("script.content", "cargo make format-check")
         }
         exec {
             name = "Clippy!"
             enabled = false
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make clippy"
             param("script.content", "cargo make clippy")
         }
         exec {
             name = "Test"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make test"
             param("script.content", "cargo make docker-test")
         }
         exec {
             name = "Convert test output to junit"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make junit"
             param("script.content", "cargo make junit")
         }
         exec {
             name = "Convert junit to html"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make junit2html"
             param("script.content", "cargo make junit2html")
         }
         exec {
             name = "Grcov"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make grcov"
             param("script.content", "cargo make coverage-report")
         }
         exec {
             name = "Coverage report"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make coverage"
             param("script.content", "cargo make coverage-report")
         }
         exec {
             name = "Change toolchain"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make nightly-linux-gnu"
         }
     }
@@ -178,59 +178,59 @@ object primary : BuildType({
     steps {
         exec {
             name = "Install toolchain"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make install-rustup-linux-gnu"
         }
         exec {
             name = "Set target toolchain"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make nightly-linux-gnu"
         }
         exec {
             name = "Update toolchain"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make update"
         }
         exec {
             name = "Check formatting"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make format-check"
             param("script.content", "cargo make format-check")
         }
         exec {
             name = "Clippy!"
             enabled = false
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make clippy"
             param("script.content", "cargo make clippy")
         }
         exec {
             name = "Test"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make test"
             param("script.content", "cargo make docker-test")
         }
         exec {
             name = "Convert test output to junit"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make junit"
             param("script.content", "cargo make junit")
         }
         exec {
             name = "Convert junit to html"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make junit2html"
             param("script.content", "cargo make junit2html")
         }
         exec {
             name = "Grcov"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make grcov"
             param("script.content", "cargo make coverage-report")
         }
         exec {
             name = "Coverage report"
-            path = "/home/buildagent/.cargo/bin/cargo"
+            path = "cargo"
             arguments = "make coverage"
             param("script.content", "cargo make coverage-report")
         }
