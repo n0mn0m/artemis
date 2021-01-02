@@ -145,6 +145,12 @@ dependencies = ["install-rustup-musl-linux"]
 command = "rustup"
 args = ["override", "set", "nightly"]
 
+[tasks.nightly-aarch64-linux]
+script = "rustup default nightly-aarch64-unknown-linux-gnu "
+
+[tasks.nightly-musl]
+script = "rustup default nightly-x86_64-unknown-linux-musl"
+
 [tasks.release]
 command = "cargo"
 args = ["build", "--release", "--verbose"]
