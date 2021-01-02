@@ -92,10 +92,6 @@ env = { "RUSTFLAGS" = "-Zinstrument-coverage", "LLVM_PROFILE_FILE" = "reports/ll
 script = "grcov . --binary-path ./target/debug/ -s . -t lcov --branch --ignore-not-existing --ignore '/*' -o coverage/lcov.info"
 dependencies = ["install-grcov"]
 
-[tasks.junit]
-script = "cat reports/test_results.json | cargo2junit > reports/test_results.xml"
-dependencies = ["install-cargo2junit"]
-
 [tasks.install-cargo-tools]
 command = "cargo"
 args = ["install", "cargo-audit", "cargo-bloat", "cargo-edit", "cargo-outdated", "cargo-update"]
@@ -126,7 +122,15 @@ script = "rustup target add aarch64-unknown-linux-gnu --toolchain nightly"
 script = "rustup target add x86_64-unknown-linux-musl --toolchain nightly"
 
 [tasks.install-node-tools]
-script = "npm install -g markdownlint-cli"
+script = "npm install -g markdownlint-cli xunit-viewer"
+
+[tasks.junit]
+script = "cat reports/test_results.json | cargo2junit > reports/test_results.xml"
+dependencies = ["install-cargo2junit"]
+
+[tasks.junit2html]
+script = "xunit-viewer -r reports/test_results.xml -o reports/test_results.html"
+dependencies = ["install-node-tools"]
 
 [tasks.markdownlint]
 script = "pwsh ./tools/MarkdownLint.ps1"
