@@ -130,7 +130,6 @@ dependencies = ["install-cargo2junit"]
 
 [tasks.junit2html]
 script = "xunit-viewer -r reports/test_results.xml -o reports/test_results.html"
-dependencies = ["install-node-tools"]
 
 [tasks.markdownlint]
 script = "pwsh ./tools/MarkdownLint.ps1"
