@@ -178,8 +178,8 @@ object primary : BuildType({
     steps {
         exec {
             name = "Install toolchain"
-            path = "cargo"
-            arguments = "make install-rustup-linux-gnu"
+            path = "cargo make"
+            arguments = "install-rustup-linux-gnu"
         }
         exec {
             name = "Set target toolchain"
