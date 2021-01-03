@@ -187,58 +187,87 @@ object primary : BuildType({
             }
             param("jetbrains_powershell_scriptArguments", "-Command install-rustup-linux-gnu")
         }
-        exec {
-            name = "Set target toolchain"
-            path = "/home/buildagent/.cargo/bin/cargo"
-            arguments = "make nightly-linux-gnu"
+        powerShell {
+            name = "Set toolchain"
+            platform = PowerShellStep.Platform.x64
+            edition = PowerShellStep.Edition.Core
+            scriptMode = file {
+                path = "tools/CI.ps1"
+            }
+            param("jetbrains_powershell_scriptArguments", "-Command nightly-linux-gnu")
         }
-        exec {
+        powerShell {
             name = "Update toolchain"
-            path = "/home/buildagent/.cargo/bin/cargo"
-            arguments = "make update"
+            platform = PowerShellStep.Platform.x64
+            edition = PowerShellStep.Edition.Core
+            scriptMode = file {
+                path = "tools/CI.ps1"
+            }
+            param("jetbrains_powershell_scriptArguments", "-Command update")
         }
-        exec {
-            name = "Check formatting"
-            path = "/home/buildagent/.cargo/bin/cargo"
-            arguments = "make format-check"
-            param("script.content", "cargo make format-check")
+        powerShell {
+            name = "Format check"
+            platform = PowerShellStep.Platform.x64
+            edition = PowerShellStep.Edition.Core
+            scriptMode = file {
+                path = "tools/CI.ps1"
+            }
+            param("jetbrains_powershell_scriptArguments", "-Command format-check")
         }
-        exec {
+        powerShell {
             name = "Clippy!"
             enabled = false
-            path = "/home/buildagent/.cargo/bin/cargo"
-            arguments = "make clippy"
-            param("script.content", "cargo make clippy")
+            platform = PowerShellStep.Platform.x64
+            edition = PowerShellStep.Edition.Core
+            scriptMode = file {
+                path = "tools/CI.ps1"
+            }
+            param("jetbrains_powershell_scriptArguments", "-Command clippy")
         }
-        exec {
+        powerShell {
             name = "Test"
-            path = "/home/buildagent/.cargo/bin/cargo"
-            arguments = "make test"
-            param("script.content", "cargo make docker-test")
+            platform = PowerShellStep.Platform.x64
+            edition = PowerShellStep.Edition.Core
+            scriptMode = file {
+                path = "tools/CI.ps1"
+            }
+            param("jetbrains_powershell_scriptArguments", "-Command test")
         }
-        exec {
+        powerShell {
             name = "Convert test output to junit"
-            path = "/home/buildagent/.cargo/bin/cargo"
-            arguments = "make junit"
-            param("script.content", "cargo make junit")
+            platform = PowerShellStep.Platform.x64
+            edition = PowerShellStep.Edition.Core
+            scriptMode = file {
+                path = "tools/CI.ps1"
+            }
+            param("jetbrains_powershell_scriptArguments", "-Command junit")
         }
-        exec {
+        powerShell {
             name = "Convert junit to html"
-            path = "/home/buildagent/.cargo/bin/cargo"
-            arguments = "make junit2html"
-            param("script.content", "cargo make junit2html")
+            platform = PowerShellStep.Platform.x64
+            edition = PowerShellStep.Edition.Core
+            scriptMode = file {
+                path = "tools/CI.ps1"
+            }
+            param("jetbrains_powershell_scriptArguments", "-Command junit2html")
         }
-        exec {
+        powerShell {
             name = "Grcov"
-            path = "/home/buildagent/.cargo/bin/cargo"
-            arguments = "make grcov"
-            param("script.content", "cargo make coverage-report")
+            platform = PowerShellStep.Platform.x64
+            edition = PowerShellStep.Edition.Core
+            scriptMode = file {
+                path = "tools/CI.ps1"
+            }
+            param("jetbrains_powershell_scriptArguments", "-Command grcov")
         }
-        exec {
-            name = "Coverage report"
-            path = "/home/buildagent/.cargo/bin/cargo"
-            arguments = "make coverage"
-            param("script.content", "cargo make coverage-report")
+        powerShell {
+            name = "Generate coverage report"
+            platform = PowerShellStep.Platform.x64
+            edition = PowerShellStep.Edition.Core
+            scriptMode = file {
+                path = "tools/CI.ps1"
+            }
+            param("jetbrains_powershell_scriptArguments", "-Command coverage")
         }
         exec {
             name = "Docker build"
