@@ -115,10 +115,10 @@ script = "rustup component add llvm-tools-preview"
 [tasks.install-rustup-linux-gnu]
 script = "rustup target add x86_64-unknown-linux-gnu --toolchain nightly"
 
-[tasks.install-rustup-aarch64-linux]
+[tasks.install-rustup-linux-aarch64]
 script = "rustup target add aarch64-unknown-linux-gnu --toolchain nightly"
 
-[tasks.install-rustup-musl-linux]
+[tasks.install-rustup-linux-musl]
 script = "rustup target add x86_64-unknown-linux-musl --toolchain nightly"
 
 [tasks.install-node-tools]
@@ -151,13 +151,13 @@ dependencies = ["install-rustup-musl-linux"]
 command = "rustup"
 args = ["override", "set", "nightly"]
 
-[tasks.nightly-aarch64-linux]
+[tasks.nightly-linux-aarch64]
 script = "rustup default nightly-aarch64-unknown-linux-gnu"
 
 [tasks.nightly-linux-gnu]
 script = "rustup default nightly-x86_64-unknown-linux-gnu"
 
-[tasks.nightly-musl]
+[tasks.nightly-linux-musl]
 script = "rustup default nightly-x86_64-unknown-linux-musl"
 
 [tasks.release]
