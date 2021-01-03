@@ -2,6 +2,7 @@ import jetbrains.buildServer.configs.kotlin.v2019_2.*
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildFeatures.dockerSupport
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.dockerCommand
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.exec
+import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.powerShell
 import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.ScheduleTrigger
 import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.schedule
 import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.vcs
@@ -176,10 +177,12 @@ object primary : BuildType({
     }
 
     steps {
-        exec {
+        powerShell {
             name = "Install toolchain"
-            path = "/home/buildagent/.cargo/bin/cargo"
-            arguments = "make install-rustup-linux-gnu"
+            scriptMode = file {
+                path = "tools/CI.ps1"
+            }
+            param("jetbrains_powershell_scriptArguments", "-Command install-rustup-linux-gnu")
         }
         exec {
             name = "Set target toolchain"
