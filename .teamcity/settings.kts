@@ -1,5 +1,6 @@
 import jetbrains.buildServer.configs.kotlin.v2019_2.*
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildFeatures.dockerSupport
+import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.PowerShellStep
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.dockerCommand
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.exec
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.powerShell
@@ -179,6 +180,8 @@ object primary : BuildType({
     steps {
         powerShell {
             name = "Install toolchain"
+            platform = PowerShellStep.Platform.x64
+            edition = PowerShellStep.Edition.Core
             scriptMode = file {
                 path = "tools/CI.ps1"
             }
