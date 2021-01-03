@@ -1,17 +1,9 @@
-#[cfg(test)]
-use crate::*;
-#[cfg(test)]
-use rocket::http::Status;
-#[cfg(test)]
-use rocket::local::Client;
-#[cfg(test)]
-use tokio_test::block_on;
-
 use crate::configuration::config::{
-    Aws, IpRateLimitPolicies, IpRateLimiting, JwtToken, LogLevel, Logging,
+    Aws, Config, IpRateLimitPolicies, IpRateLimiting, JwtToken, LogLevel, Logging,
 };
+use crate::configuration::secrets::Secrets;
 
-fn get_test_config() -> Config {
+pub fn get_test_config() -> Config {
     Config {
         application_name: "test-app".to_string(),
         application_id: "234234-test-app".to_string(),
@@ -46,7 +38,7 @@ fn get_test_config() -> Config {
     }
 }
 
-fn get_test_secrets() -> Secrets {
+pub fn get_test_secrets() -> Secrets {
     Secrets {
         environment: "test".to_string(),
         elasticsearch_endpoint: "".to_string(),
@@ -64,42 +56,4 @@ fn get_test_secrets() -> Secrets {
         aws_jwt_management_bucket: "".to_string(),
         aws_jwt_management_key: "".to_string(),
     }
-}
-
-#[test]
-fn system_time() {
-    let sv = block_on(configure_services());
-    let c = get_test_config();
-    let sc = get_test_secrets();
-    let si = ServiceInformation::new(&c);
-
-    let st = Settings(c, sc, si);
-
-    let client = Client::new(launchpad(sv, st)).expect("valid rocket instance");
-    let mut response = client.get("/diagnostic/systemtime").dispatch();
-
-    assert_eq!(response.status(), Status::Ok);
-    assert_eq!(
-        response.body_string(),
-        Some(format!(
-            "Today is {}, {}",
-            chrono::offset::Utc::today().to_string(),
-            chrono::offset::Utc::today().year()
-        ))
-    );
-}
-
-#[test]
-fn healthcheck() {
-    let sv = block_on(configure_services());
-    let c = get_test_config();
-    let sc = get_test_secrets();
-    let si = ServiceInformation::new(&c);
-
-    let st = Settings(c, sc, si);
-
-    let client = Client::new(launchpad(sv, st)).expect("valid rocket instance");
-    let response = client.get("/diagnostic/healthcheck").dispatch();
-
-    assert_eq!(response.status(), Status::NoContent);
 }

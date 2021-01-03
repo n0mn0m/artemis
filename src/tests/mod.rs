@@ -1,1 +1,2 @@
-mod routes;
+mod common;
+mod routes_test;
