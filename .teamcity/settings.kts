@@ -179,7 +179,7 @@ object primary : BuildType({
         exec {
             name = "Install toolchain"
             path = "/home/buildagent/.cargo/bin/cargo"
-            arguments = "install-rustup-linux-gnu"
+            arguments = "make install-rustup-linux-gnu"
         }
         exec {
             name = "Set target toolchain"
